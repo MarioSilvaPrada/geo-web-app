@@ -1,103 +1,120 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { MapPin, Search, ArrowRight, Loader2, Building2, BarChart3 } from 'lucide-react';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [address, setAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!address.trim()) return;
+
+    setIsLoading(true);
+    try {
+      const encodedAddress = encodeURIComponent(address);
+      router.push(`/results?address=${encodedAddress}`);
+    } catch (error) {
+      console.error('Error:', error);
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-l from-purple-200 to-pink-200 rounded-full opacity-20 blur-3xl transform translate-x-32 -translate-y-32"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-200 to-cyan-200 rounded-full opacity-20 blur-3xl transform -translate-x-32 translate-y-32"></div>
+      
+      <div className="container mx-auto px-4 py-20 relative z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-8">
+            <div className="inline-flex items-center px-4 py-2 mb-6 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-full">
+              <MapPin className="w-4 h-4 mr-2" />
+              Powered by OpenStreetMap & Overpass API
+            </div>
+            <h1 className="text-6xl font-bold mb-6 leading-tight">
+              <span className="gradient-text">Discover</span>
+              <br />
+              <span className="text-gray-900">What's around you</span>
+            </h1>
+            <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+              Transform any address into rich insights. Explore nearby amenities, businesses, and hidden gems with our powerful location intelligence platform.
+            </p>
+          </div>
+
+          <div className="max-w-2xl mx-auto mb-16">
+            <form onSubmit={handleSubmit} className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-xl opacity-25 group-hover:opacity-40 transition duration-300"></div>
+              <div className="relative flex items-center bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/50 p-2">
+                <div className="flex-1 flex items-center pl-4">
+                  <Search className="w-6 h-6 text-gray-400 mr-3" />
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter street address (e.g., 123 Main St, New York, NY)"
+                    className="w-full py-4 text-lg bg-transparent border-none outline-none placeholder-gray-500 text-gray-900"
+                    disabled={isLoading}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading || !address.trim()}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center">
+                      <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                      Exploring...
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <span>Explore</span>
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </div>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="group">
+              <div className="glass-card rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <MapPin className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Smart Geocoding</h3>
+                <p className="text-gray-600 leading-relaxed">Convert any address to precise coordinates with advanced geocoding technology</p>
+              </div>
+            </div>
+            
+            <div className="group">
+              <div className="glass-card rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <Building2 className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Nearby Discovery</h3>
+                <p className="text-gray-600 leading-relaxed">Find restaurants, shops, services, and amenities in your vicinity instantly</p>
+              </div>
+            </div>
+            
+            <div className="group">
+              <div className="glass-card rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border">
+                <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <BarChart3 className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Rich Analytics</h3>
+                <p className="text-gray-600 leading-relaxed">Get detailed insights and metrics about any location with beautiful visualizations</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
