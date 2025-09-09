@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import axios from "axios";
@@ -42,6 +42,30 @@ const MapComponent = dynamic(() => import("../components/MapComponent"), {
 });
 
 export default function Results() {
+  return (
+    <Suspense fallback={<ResultsLoading />}>
+      <ResultsContent />
+    </Suspense>
+  );
+}
+
+function ResultsLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex items-center justify-center">
+      <div className="glass-card rounded-2xl p-12 text-center shadow-xl border">
+        <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-6"></div>
+        <h2 className="text-xl font-semibold mb-3 text-gray-900">
+          Loading...
+        </h2>
+        <p className="text-gray-600">
+          Preparing location analysis
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ResultsContent() {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
   const [isLoading, setIsLoading] = useState(true);
